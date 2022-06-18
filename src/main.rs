@@ -1,16 +1,19 @@
 extern crate core;
 
 use std::fmt::{Display, Formatter};
+use colored::Colorize;
 
 use Colour::*;
 use PieceClass::*;
+use crate::human_player::HumanPlayer;
 
 mod human_player;
 
 fn main() {
-    // let player1 = HumanPlayer::new();
-    // let player2 = HumanPlayer::new();
-    // let game = Game::new(Box::new(player1), Box::new(player2));
+    let player1 = HumanPlayer::new();
+    let player2 = HumanPlayer::new();
+    let mut game = Game::new(Box::new(player1), Box::new(player2));
+    game.play();
 }
 
 type Board = [[Option<Piece>; 8]; 8];
@@ -56,7 +59,7 @@ impl Game {
 }
 
 fn new_board() -> Board {
-    let mut piece_classes = [
+    let piece_classes = [
         Rook(false),
         Knight,
         Bishop,
@@ -101,28 +104,28 @@ impl Display for Piece {
             "{}",
             match self.class {
                 Pawn => match self.owner {
-                    Black => "♙",
-                    White => "♟",
+                    Black => "P".black(),
+                    White => "P".white(),
                 },
                 Rook(_) => match self.owner {
-                    Black => "♖",
-                    White => "♜",
+                    Black => "R".black(),
+                    White => "R".white(),
                 },
                 Knight => match self.owner {
-                    Black => "♘",
-                    White => "♞",
+                    Black => "N".black(),
+                    White => "N".white(),
                 },
                 Bishop => match self.owner {
-                    Black => "♗",
-                    White => "♝",
+                    Black => "B".black(),
+                    White => "B".white(),
                 },
                 Queen => match self.owner {
-                    Black => "♕",
-                    White => "♛",
+                    Black => "Q".black(),
+                    White => "Q".white(),
                 },
                 King(_) => match self.owner {
-                    Black => "♔",
-                    White => "♚",
+                    Black => "K".black(),
+                    White => "K".white(),
                 },
             }
         )
@@ -155,46 +158,16 @@ trait Player {
 struct Move {
     src: String,
     dst: String,
-    move_type: MoveType,
-}
-
-enum MoveType {
-    Regular,
-    Castle(String, String),
-    EnPassant(String),
-    Promotion(Piece),
 }
 
 impl Display for Move {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{}",
-            match &self.move_type {
-                MoveType::Regular => format!("{} to {}", self.src, self.dst),
-                MoveType::Castle(rook_src, rook_dst) => format!(
-                    "Castle {} to {} & {} to {}",
-                    self.src, self.dst, rook_src, rook_dst
-                ),
-                MoveType::EnPassant(cap) =>
-                    format!("En passant {} to {} capturing {}", self.src, self.dst, cap),
-                MoveType::Promotion(new_piece) => format!(
-                    "{} to {} promoting to {}",
-                    self.src,
-                    self.dst,
-                    new_piece.to_string()
-                ),
-            }
-        )
+        write!(f, "{} to {}", self.src, self.dst)
     }
 }
 
 impl Move {
-    fn new(src: String, dst: String, move_type: MoveType) -> Move {
-        Move {
-            src,
-            dst,
-            move_type,
-        }
+    fn new(src: String, dst: String) -> Move {
+        Move { src, dst }
     }
 }
