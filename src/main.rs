@@ -2,7 +2,6 @@
 extern crate core;
 
 use std::fmt::{Display, Formatter};
-use std::num::ParseIntError;
 
 use colored::Colorize;
 
