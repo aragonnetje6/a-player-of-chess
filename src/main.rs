@@ -2,6 +2,7 @@
 extern crate core;
 
 use std::fmt::{Display, Formatter};
+use std::num::ParseIntError;
 
 use colored::Colorize;
 
@@ -337,6 +338,31 @@ fn coords_to_string(row: usize, col: usize) -> String {
     )
 }
 
+fn string_to_coords(square: &str) -> Result<(usize, usize), &str> {
+    let (c, r) = square.split_at(1);
+    Ok((
+        match r.parse::<usize>() {
+            Ok(x) => x,
+            Err(_) => {
+                return Err("Invalid row");
+            }
+        },
+        match c {
+            "a" => 0,
+            "b" => 1,
+            "c" => 2,
+            "d" => 3,
+            "e" => 4,
+            "f" => 5,
+            "g" => 6,
+            "h" => 7,
+            _ => {
+                return Err("Invalid column");
+            }
+        },
+    ))
+}
+
 fn new_board() -> Board {
     let piece_classes = [
         Rook(false),
@@ -450,15 +476,15 @@ impl Display for Move {
 impl Move {
     fn new(src: String, dst: String) -> Move {
         Self {
-            src,
-            dst,
+            src: src.to_lowercase(),
+            dst: dst.to_lowercase(),
             promotion: None,
         }
     }
     fn promotion(src: String, dst: String, promote_to: PieceClass) -> Move {
         Self {
-            src,
-            dst,
+            src: src.to_lowercase(),
+            dst: dst.to_lowercase(),
             promotion: Some(promote_to),
         }
     }
